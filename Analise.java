@@ -2,104 +2,86 @@ import java.util.Arrays;
 import java.util.Random;
 
 /**
- * ATAD 2026/27 - Laboratório 3
+ * ATAD 2026/27 - Laboratório 2
  *
- * Pesquisa e ordenação.
+ * Código base para a análise de complexidade.
  *
- * Métodos já implementados: pesquisaLinear, indiceMinimo e os utilitários.
- * Métodos a implementar: pesquisaBinaria, bubbleSort, selectionSort.
- *
- * Os contadores `comparacoes` e `trocas` são repostos pelo chamador.
+ * Regras:
+ *  - Não alterar a lógica dos algoritmos.
+ *  - Podes acrescentar contadores (ver README).
+ *  - Não alterar os utilitários de construção de arrays.
  */
-public class Ordenacao {
+public class Analise {
 
-    // Contadores globais (repor antes de cada medição)
-    static long comparacoes;
-    static long trocas;
+    static long ops = 0;
 
     // ---------------------------------------------------------------
-    // Pesquisa (implementado)
+    // Algoritmos a analisar
     // ---------------------------------------------------------------
 
-    public static int pesquisaLinear(int[] a, int x) {
+    /** Soma de todos os elementos de um array. */
+    public static int soma(int[] a) {
+        int s = 0;
         for (int i = 0; i < a.length; i++) {
-            comparacoes++;
-            if (a[i] == x) {
-                return i;
-            }
+            ops++;
+            s = s + a[i];
         }
-        return -1;
+        return s;
     }
 
-    // ---------------------------------------------------------------
-    // Pesquisa binária (a implementar)
-    // ---------------------------------------------------------------
-
-    // Pré-condição: a está ordenado crescentemente
-    public static int pesquisaBinaria(int[] a, int x) {
-        int esq = 0;
-        int dir = a.length - 1;
-        while (esq <= dir) {
-            comparacoes++;
-
-            int meio = (esq + dir) / 2;
-            if (a[meio] == x) {
-                return meio;
-            }
-            if (a[meio] < x) {
-                esq = meio + 1;
-            } else {
-                dir = meio - 1;
+    /** Conta quantos elementos são pares. */
+    public static int contarPares(int[] a) {
+        int c = 0;
+        for (int i = 0; i < a.length; i++) {
+            if (a[i] % 2 == 0) {
+                c++;
             }
         }
-        return -1;
-        // Contar uma comparação por iteração (comparacoes++).
+        return c;
     }
 
-    // ---------------------------------------------------------------
-    // Mínimo (implementado)
-    // ---------------------------------------------------------------
-
-    // Pré-condição: a tem pelo menos um elemento
-    public static int indiceMinimo(int[] a) {
-        int indiceMin = 0;
+    /** Maior elemento de um array não vazio. */
+    public static int maximo(int[] a) {
+        int m = a[0];
         for (int i = 1; i < a.length; i++) {
-            comparacoes++;
-            if (a[i] < a[indiceMin]) {
-                indiceMin = i;
+            ops++;
+            if (a[i] > m) {
+                m = a[i];
             }
         }
-        return indiceMin;
+        return m;
     }
 
-    // ---------------------------------------------------------------
-    // Ordenação (a implementar)
-    // ---------------------------------------------------------------
-
-    public static void bubbleSort(int[] a) {
-        // TODO: implementar (com flag de paragem antecipada).
-        // Contar uma comparação por cada comparação entre elementos
-        // e uma troca por cada troca efetuada.
+    /** Indica se existe algum elemento negativo (termina no primeiro). */
+    public static boolean temNegativo(int[] a) {
+        for (int i = 0; i < a.length; i++) {
+            ops++;
+            if (a[i] < 0) {
+                return true;
+            }
+        }
+        return false;
     }
 
-    public static void selectionSort(int[] a) {
-        // TODO: implementar.
-        // Contar comparações e trocas como no bubbleSort.
+    /** Conta os pares de posições (i, j), i < j, com valores iguais. */
+    public static int contaParesIguais(int[] a) {
+        int c = 0;
+        for (int i = 0; i < a.length; i++) {
+            for (int j = i + 1; j < a.length; j++) {
+                ops++;
+                if (a[i] == a[j]) {
+                    c++;
+                }
+            }
+        }
+        return c;
     }
 
     // ---------------------------------------------------------------
     // Utilitários (não alterar)
     // ---------------------------------------------------------------
 
-    public static int[] copia(int[] a) {
-        int[] b = new int[a.length];
-        for (int i = 0; i < a.length; i++) {
-            b[i] = a[i];
-        }
-        return b;
-    }
-
-    /** Array [0, 1, ..., n-1]. */
+    /** Array [0, 1, 2, ..., n-1]. */
     public static int[] crescente(int n) {
         int[] a = new int[n];
         for (int i = 0; i < n; i++) {
@@ -108,18 +90,9 @@ public class Ordenacao {
         return a;
     }
 
-    /** Array [n-1, n-2, ..., 0]. */
-    public static int[] inverso(int n) {
-        int[] a = new int[n];
-        for (int i = 0; i < n; i++) {
-            a[i] = n - 1 - i;
-        }
-        return a;
-    }
-
-    /** Array de n valores pseudo-aleatórios em [0, 1000]. */
+    /** Array de n valores pseudo-aleatórios em [-500, 500]. */
     public static int[] aleatorio(int n) {
-        return aleatorio(n, 0, 1000);
+        return aleatorio(n, -500, 500);
     }
 
     /** Array de n valores pseudo-aleatórios em [min, max].
@@ -136,13 +109,23 @@ public class Ordenacao {
         return a;
     }
 
-    public static boolean estaOrdenado(int[] a) {
-        for (int i = 0; i < a.length - 1; i++) {
-            if (a[i] >= a[i + 1]) {
-                return false;
-            }
-        }
-        return true;
+    /** Array [0, 1, ..., n-1] com o primeiro elemento negativo. */
+    public static int[] comNegativoNoInicio(int n) {
+        int[] a = crescente(n);
+        a[0] = -1;
+        return a;
+    }
+
+    /** Array [0, 1, ..., n-1] com o último elemento negativo. */
+    public static int[] comNegativoNoFim(int n) {
+        int[] a = crescente(n);
+        a[n - 1] = -1;
+        return a;
+    }
+
+    /** Array [0, 1, ..., n-1] sem elementos negativos. */
+    public static int[] semNegativos(int n) {
+        return crescente(n);
     }
 
     // ---------------------------------------------------------------
@@ -150,33 +133,61 @@ public class Ordenacao {
     // ---------------------------------------------------------------
 
     public static void main(String[] args) {
-        int[] a = aleatorio(10);
-        System.out.println("antes:       " + Arrays.toString(a));
+        /*
+        int[] a = aleatorio(10, -5, 5);
+        System.out.println(Arrays.toString(a));
 
-        int[] b = copia(a);
-        bubbleSort(b);
-        System.out.println("bubble:      " + Arrays.toString(b) + "  ordenado? " + estaOrdenado(b));
+        System.out.println("soma        = " + soma(a));
+        System.out.println("contarPares = " + contarPares(a));
+        System.out.println("maximo      = " + maximo(a));
+        System.out.println("temNegativo = " + temNegativo(a));
+        System.out.println("contaParesIguais = " + contaParesIguais(a));
 
-        int[] c = copia(a);
-        selectionSort(c);
-        System.out.println("selection:   " + Arrays.toString(c) + "  ordenado? " + estaOrdenado(c));
+         */
 
-        System.out.println("---");
 
-        int[] ord = crescente(10);
-        System.out.println(Arrays.toString(ord));
+        System.out.println("SOMA");
+        System.out.println("n\tops\tops/n");
+        for (int n = 100; n <= 800; n *= 2) {
+            int[] a = aleatorio(n);
 
-        comparacoes = 0;
-        System.out.println("linear(7)    = " + pesquisaLinear(ord, 7) + "  (" + comparacoes + " comparações)");
+            ops = 0;
+            soma(a);
+            System.out.println(n + "\t" + ops + "\t" + (double) ops / n);
+        }
 
-        comparacoes = 0;
-        System.out.println("binaria(7)   = " + pesquisaBinaria(ord, 7) + "  (" + comparacoes + " comparações)");
+        System.out.println("MAXIMO");
+        System.out.println("n\tops\tops/n");
+        for (int n = 100; n <= 800; n *= 2) {
+            int[] a = aleatorio(n);
 
-        comparacoes = 0;
-        System.out.println("indiceMinimo = " + indiceMinimo(a) + "  (" + comparacoes + " comparações)");
+            ops = 0;
+            maximo(a);
+            System.out.println(n + "\t" + ops + "\t" + (double) ops / n);
+        }
 
-        System.out.println("---");
+        System.out.println("CONTA PARES IGUAIS");
+        System.out.println("n\tops\tops/n²");
+        for (int n = 100; n <= 800; n *= 2) {
+            int[] a = aleatorio(n);
 
-        // TODO
+            ops = 0;
+            contaParesIguais(a);
+            System.out.println(n + "\t" + ops + "\t" + (double) ops / (n*n));
+        }
+
+        System.out.println("TEM NEGATIVO");
+        ops = 0;
+        temNegativo(comNegativoNoInicio(1000));
+        System.out.println("com negativo no inicio | ops: " + ops);
+
+        ops = 0;
+        temNegativo(comNegativoNoFim(1000));
+        System.out.println("com negativo no fim | ops: " + ops);
+
+        ops = 0;
+        temNegativo(semNegativos(1000));
+        System.out.println("sem negativos | ops: " + ops);
+
     }
 }
